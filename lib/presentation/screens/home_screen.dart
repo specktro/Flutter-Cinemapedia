@@ -1,5 +1,5 @@
+import 'package:cinemapedia/config/environment.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -11,7 +11,7 @@ class HomeScreen extends StatelessWidget {
         title: const Text('Home Screen'),
       ),
       body: Center(
-        child: Text('${dotenv.env['THE_MOVIEDB_KEY']}'),
+        child: Text('${Environment.MovieDBKey}')
       )
     );
   }

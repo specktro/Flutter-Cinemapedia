@@ -29,7 +29,7 @@ class MovieDBResponse {
   );
 
   Map<String, dynamic> toJson() => {
-    "dates": dates?.toJson() ?? null,
+    "dates": dates?.toJson(),
     "page": page,
     "results": List<dynamic>.from(results.map((x) => x.toJson())),
     "total_pages": totalPages,

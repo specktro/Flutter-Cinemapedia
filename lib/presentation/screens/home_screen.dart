@@ -38,17 +38,57 @@ class _HomeViewState extends ConsumerState<_HomeView> {
     final slideshowMovies = ref.watch(moviesSlideshoProvider);
     final nowPlayingMovies = ref.watch(nowPlayingMoviesProvider);
 
-    return Column(
-      children: [
-        CustomAppBar(),
-        MoviesSlideWidget(movies: slideshowMovies),
-        MoviesHorizontalListView(
-          movies: nowPlayingMovies,
-          title: 'Now in Theatres',
-          subtitle: 'Today',
-          loadNextPage: () {
-            ref.read(nowPlayingMoviesProvider.notifier).loadNextPage();
-          }
+    return CustomScrollView(
+      slivers: [
+        SliverAppBar(
+          floating: true,
+          flexibleSpace: const FlexibleSpaceBar(
+            title: CustomAppBar()
+          )
+        ),
+        SliverList(
+          delegate: SliverChildBuilderDelegate((context, index) {
+            return Column(
+              children: [
+                MoviesSlideWidget(movies: slideshowMovies),
+                MoviesHorizontalListView(
+                  movies: nowPlayingMovies,
+                  title: 'Now in Theatres',
+                  subtitle: 'Today',
+                  loadNextPage: () {
+                    ref.read(nowPlayingMoviesProvider.notifier).loadNextPage();
+                  }
+                ),
+                MoviesHorizontalListView(
+                  movies: nowPlayingMovies,
+                  title: 'Coming Soon',
+                  subtitle: 'Next month',
+                  loadNextPage: () {
+                    ref.read(nowPlayingMoviesProvider.notifier).loadNextPage();
+                  }
+                ),
+                MoviesHorizontalListView(
+                  movies: nowPlayingMovies,
+                  title: 'Popular Movies',
+                  subtitle: 'Now',
+                  loadNextPage: () {
+                    ref.read(nowPlayingMoviesProvider.notifier).loadNextPage();
+                  }
+                ),
+                MoviesHorizontalListView(
+                  movies: nowPlayingMovies,
+                  title: 'Top Rated',
+                  subtitle: 'All the time',
+                  loadNextPage: () {
+                    ref.read(nowPlayingMoviesProvider.notifier).loadNextPage();
+                  }
+                ),
+                const SizedBox(height: 10)
+              ]
+            );
+          },
+          childCount: 1
+          )
         )
       ]
     );

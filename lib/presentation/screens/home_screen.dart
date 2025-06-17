@@ -42,7 +42,7 @@ class _HomeViewState extends ConsumerState<_HomeView> {
       children: [
         CustomAppBar(),
         MoviesSlideWidget(movies: slideshowMovies),
-        MoviesHorizontalListview(
+        MoviesHorizontalListView(
           movies: nowPlayingMovies,
           title: 'Now in Theatres',
           subtitle: 'Today',

@@ -1,5 +1,6 @@
 import 'package:cinemapedia/presentation/providers/movies_providers.dart';
 import 'package:cinemapedia/presentation/providers/movies_slideshow_provider.dart';
+import 'package:cinemapedia/presentation/widgets/movies_horizontal_listview.dart';
 import 'package:cinemapedia/presentation/widgets/movies_sildeshow.dart';
 import 'package:cinemapedia/presentation/widgets/shared/custom_appbar.dart';
 import 'package:cinemapedia/presentation/widgets/shared/custom_bottom_navbar.dart';
@@ -35,11 +36,17 @@ class _HomeViewState extends ConsumerState<_HomeView> {
   @override
   Widget build(BuildContext context) {
     final slideshowMovies = ref.watch(moviesSlideshoProvider);
+    final nowPlayingMovies = ref.watch(nowPlayingMoviesProvider);
 
     return Column(
       children: [
         CustomAppBar(),
-        MoviesSlideWidget(movies: slideshowMovies)
+        MoviesSlideWidget(movies: slideshowMovies),
+        MoviesHorizontalListview(
+          movies: nowPlayingMovies,
+          title: 'Now in Theatres',
+          subtitle: 'Today',
+        )
       ]
     );
   }

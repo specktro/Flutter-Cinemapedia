@@ -87,8 +87,7 @@ class _HomeViewState extends ConsumerState<_HomeView> {
               ]
             );
           },
-          childCount: 1
-          )
+          childCount: 1)
         )
       ]
     );

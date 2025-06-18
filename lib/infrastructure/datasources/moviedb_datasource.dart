@@ -32,4 +32,10 @@ class MovieDBDatasource implements MoviesDatasource {
     final response = await dio.get('/movie/popular', queryParameters: {"page": page});
     return _jsonToMovies(response.data);
   }
+
+  @override
+  Future<List<Movie>> getUpcoming({int page = 1}) async {
+    final response = await dio.get('/movie/upcoming', queryParameters: {"page": page});
+    return _jsonToMovies(response.data);
+  }
 }

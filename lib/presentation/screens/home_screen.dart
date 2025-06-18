@@ -1,3 +1,4 @@
+import 'package:cinemapedia/presentation/providers/first_load_provider.dart';
 import 'package:cinemapedia/presentation/providers/movies_providers.dart';
 import 'package:cinemapedia/presentation/providers/movies_slideshow_provider.dart';
 import 'package:cinemapedia/presentation/screens/full_screen_loader.dart';
@@ -39,66 +40,70 @@ class _HomeViewState extends ConsumerState<_HomeView> {
 
   @override
   Widget build(BuildContext context) {
+    final isLoading = ref.watch(firstLoadProvider);
+    
+    if (isLoading) {
+      return const FullScreenLoader();
+    }
+
     final slideshowMovies = ref.watch(moviesSlideshoProvider);
     final nowPlayingMovies = ref.watch(nowPlayingMoviesProvider);
     final popularMovies = ref.watch(popularMoviesProvider);
     final upcomingMovies = ref.watch(upcomingMoviesProvider);
     final topRatedMovies = ref.watch(topRatedMoviesProvider);
 
-    return const FullScreenLoader();
-
-    // return CustomScrollView(
-    //   slivers: [
-    //     SliverAppBar(
-    //       floating: true,
-    //       flexibleSpace: const FlexibleSpaceBar(
-    //         title: CustomAppBar()
-    //       )
-    //     ),
-    //     SliverList(
-    //       delegate: SliverChildBuilderDelegate((context, index) {
-    //         return Column(
-    //           children: [
-    //             MoviesSlideWidget(movies: slideshowMovies),
-    //             MoviesHorizontalListView(
-    //               movies: nowPlayingMovies,
-    //               title: 'Now in Theatres',
-    //               subtitle: 'Today',
-    //               loadNextPage: () {
-    //                 ref.read(nowPlayingMoviesProvider.notifier).loadNextPage();
-    //               }
-    //             ),
-    //             MoviesHorizontalListView(
-    //               movies: upcomingMovies,
-    //               title: 'Upcoming Movies',
-    //               subtitle: 'Next month',
-    //               loadNextPage: () {
-    //                 ref.read(upcomingMoviesProvider.notifier).loadNextPage();
-    //               }
-    //             ),
-    //             MoviesHorizontalListView(
-    //               movies: popularMovies,
-    //               title: 'Popular Movies',
-    //               subtitle: 'Today',
-    //               loadNextPage: () {
-    //                 ref.read(popularMoviesProvider.notifier).loadNextPage();
-    //               }
-    //             ),
-    //             MoviesHorizontalListView(
-    //               movies: topRatedMovies,
-    //               title: 'Top Rated Movies',
-    //               subtitle: 'All time',
-    //               loadNextPage: () {
-    //                 ref.read(topRatedMoviesProvider.notifier).loadNextPage();
-    //               }
-    //             ),
-    //             const SizedBox(height: 10)
-    //           ]
-    //         );
-    //       },
-    //       childCount: 1)
-    //     )
-    //   ]
-    // );
+    return CustomScrollView(
+      slivers: [
+        SliverAppBar(
+          floating: true,
+          flexibleSpace: const FlexibleSpaceBar(
+            title: CustomAppBar()
+          )
+        ),
+        SliverList(
+          delegate: SliverChildBuilderDelegate((context, index) {
+            return Column(
+              children: [
+                MoviesSlideWidget(movies: slideshowMovies),
+                MoviesHorizontalListView(
+                  movies: nowPlayingMovies,
+                  title: 'Now in Theatres',
+                  subtitle: 'Today',
+                  loadNextPage: () {
+                    ref.read(nowPlayingMoviesProvider.notifier).loadNextPage();
+                  }
+                ),
+                MoviesHorizontalListView(
+                  movies: upcomingMovies,
+                  title: 'Upcoming Movies',
+                  subtitle: 'Next month',
+                  loadNextPage: () {
+                    ref.read(upcomingMoviesProvider.notifier).loadNextPage();
+                  }
+                ),
+                MoviesHorizontalListView(
+                  movies: popularMovies,
+                  title: 'Popular Movies',
+                  subtitle: 'Today',
+                  loadNextPage: () {
+                    ref.read(popularMoviesProvider.notifier).loadNextPage();
+                  }
+                ),
+                MoviesHorizontalListView(
+                  movies: topRatedMovies,
+                  title: 'Top Rated Movies',
+                  subtitle: 'All time',
+                  loadNextPage: () {
+                    ref.read(topRatedMoviesProvider.notifier).loadNextPage();
+                  }
+                ),
+                const SizedBox(height: 10)
+              ]
+            );
+          },
+          childCount: 1)
+        )
+      ]
+    );
   }
 }

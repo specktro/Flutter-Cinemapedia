@@ -19,7 +19,7 @@ class MovieMapNotifier extends StateNotifier<Map<String, Movie>> {
     }
     // FIXME: This delay is just for demonstration purposes.
     await Future.delayed(const Duration(milliseconds: 600));
-
+    print('Realizing http request');
     final movie = await getMovie(movieId);
     state = {...state, movieId: movie};
   }

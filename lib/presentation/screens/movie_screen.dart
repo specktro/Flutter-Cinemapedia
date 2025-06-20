@@ -106,11 +106,66 @@ class _MovieDescription extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: 100),
+        _ActorsByMovie(movieId: movie.id.toString()),
+        const SizedBox(height: 50.0),
       ]
     );
   }
 }
+
+class _ActorsByMovie extends ConsumerWidget {
+  final String movieId;
+  const _ActorsByMovie({required this.movieId});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final actorsByMovie = ref.watch(actorsByMovieProvider);
+
+    if (actorsByMovie[movieId] == null) {
+      return const CircularProgressIndicator(strokeWidth: 2.0);
+    }
+
+    final actors = actorsByMovie[movieId]!;
+
+    return SizedBox(
+      height: 300,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: actors.length,
+        itemBuilder: (context, index) {
+          final actor = actors[index];
+          return Container(
+            padding: const EdgeInsets.all(8.0),
+            width: 135.0,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(20.0),
+                  child: Image.network(
+                    actor.profilePath,
+                    height: 180.0,
+                    width: 135.0,
+                    fit: BoxFit.cover,
+                  )
+                ),
+                const SizedBox(height: 5.0),
+                Text(actor.name, maxLines: 2, overflow: TextOverflow.ellipsis),
+                Text(
+                  actor.character ?? '',
+                  maxLines: 2,
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                  overflow: TextOverflow.ellipsis
+                )
+              ]
+            )
+          );
+        }
+      ),
+    );
+  }
+}
+
 
 class _CustomSliverAppBar extends StatelessWidget {
   final Movie movie;

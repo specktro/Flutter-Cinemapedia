@@ -9,7 +9,7 @@ typedef SearchMoviescallback = Future<List<Movie>> Function(String query);
 
 class SearchMovieDelegate extends SearchDelegate<Movie?> {
   final SearchMoviescallback onSearch;
-  final List<Movie> initialMovies;
+  List<Movie> initialMovies;
   StreamController debounceMovie = StreamController<List<Movie>>.broadcast();
   Timer? _debounceTimer;
 
@@ -29,6 +29,7 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
 
     _debounceTimer = Timer(const Duration(milliseconds: 500), () async {
       final movies = await onSearch(query);
+      initialMovies = movies;
       debounceMovie.add(movies);
     });
   }
@@ -57,15 +58,7 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
     );
   }
 
-  @override
-  Widget buildResults(BuildContext context) {
-    return const Text('buildResults');
-  }
-
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    _onQueryChanged(query);
-
+  Widget _buildMovieResults() {
     return StreamBuilder(
       initialData: initialMovies,
       stream: debounceMovie.stream,
@@ -76,16 +69,28 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
           itemCount: movies.length,
           itemBuilder: (context, index) {
             return _MovieItem(
-              onMovieSelected: (context, movie) {
-                _clearStream();
-                close(context, movie);
-              },
-              movie: movies[index]
+                onMovieSelected: (context, movie) {
+                  _clearStream();
+                  close(context, movie);
+                },
+                movie: movies[index]
             );
           },
         );
       },
     );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    return _buildMovieResults();
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    _onQueryChanged(query);
+
+    return _buildMovieResults();
   }
 }
 

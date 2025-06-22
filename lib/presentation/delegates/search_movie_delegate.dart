@@ -10,7 +10,8 @@ typedef SearchMoviescallback = Future<List<Movie>> Function(String query);
 class SearchMovieDelegate extends SearchDelegate<Movie?> {
   final SearchMoviescallback onSearch;
   List<Movie> initialMovies;
-  StreamController debounceMovie = StreamController<List<Movie>>.broadcast();
+  StreamController<List<Movie>> debounceMovie = StreamController.broadcast();
+  StreamController<bool> isLoadingStream = StreamController.broadcast();
   Timer? _debounceTimer;
 
   SearchMovieDelegate({
@@ -23,6 +24,8 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
   }
 
   void _onQueryChanged(String query) {
+    isLoadingStream.add(true);
+
     if (_debounceTimer?.isActive ?? false) {
       _debounceTimer!.cancel();
     }
@@ -31,31 +34,8 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
       final movies = await onSearch(query);
       initialMovies = movies;
       debounceMovie.add(movies);
+      isLoadingStream.add(false);
     });
-  }
-
-  @override
-  String get searchFieldLabel => 'Search movie';
-
-  @override
-  List<Widget>? buildActions(BuildContext context) {
-    return [
-      FadeIn(
-        animate: query.isNotEmpty,
-        child: IconButton(onPressed: () => query = '', icon: Icon(Icons.clear)),
-      ),
-    ];
-  }
-
-  @override
-  Widget? buildLeading(BuildContext context) {
-    return IconButton(
-      onPressed: () {
-        _clearStream();
-        close(context, null);
-      },
-      icon: Icon(Icons.arrow_back_ios_new_rounded),
-    );
   }
 
   Widget _buildMovieResults() {
@@ -78,6 +58,51 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
           },
         );
       },
+    );
+  }
+
+  @override
+  String get searchFieldLabel => 'Search movie';
+
+  @override
+  List<Widget>? buildActions(BuildContext context) {
+    return [
+      StreamBuilder(
+        initialData: false,
+        stream: isLoadingStream.stream,
+        builder: (context, snapshot) {
+          if (snapshot.data ?? false) {
+            return SpinPerfect(
+              duration: const Duration(seconds: 2),
+              spins: 10,
+              infinite: true,
+              child: IconButton(
+                  onPressed: () => query = '',
+                  icon: const Icon( Icons.refresh_rounded )
+              ),
+            );
+          }
+
+          return FadeIn(
+              animate: query.isNotEmpty,
+              child: IconButton(
+                onPressed: () => query = '',
+                icon: Icon(Icons.clear)
+              )
+          );
+        }
+      )
+    ];
+  }
+
+  @override
+  Widget? buildLeading(BuildContext context) {
+    return IconButton(
+      onPressed: () {
+        _clearStream();
+        close(context, null);
+      },
+      icon: Icon(Icons.arrow_back_ios_new_rounded),
     );
   }
 

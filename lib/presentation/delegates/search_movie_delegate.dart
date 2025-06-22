@@ -1,13 +1,39 @@
+import 'dart:async';
+import 'package:flutter/material.dart';
+
 import 'package:animate_do/animate_do.dart';
 import 'package:cinemapedia/domain/entities/movie.dart';
-import 'package:flutter/material.dart';
+
 
 typedef SearchMoviescallback = Future<List<Movie>> Function(String query);
 
 class SearchMovieDelegate extends SearchDelegate<Movie?> {
   final SearchMoviescallback onSearch;
+  StreamController debounceMovie = StreamController<List<Movie>>.broadcast();
+  Timer? _debounceTimer;
 
   SearchMovieDelegate({required this.onSearch});
+
+  void _clearStream() {
+    debounceMovie.close();
+  }
+
+  void _onQueryChanged(String query) {
+    if (_debounceTimer?.isActive ?? false) {
+      _debounceTimer!.cancel();
+    }
+
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () async {
+      if (query.isEmpty) {
+        debounceMovie.add([]);
+        return;
+      }
+
+      final movies = await onSearch(query);
+      print(movies.length.toString());
+      debounceMovie.add(movies);
+    });
+  }
 
   @override
   String get searchFieldLabel => 'Search movie';
@@ -25,7 +51,10 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
   @override
   Widget? buildLeading(BuildContext context) {
     return IconButton(
-      onPressed: () => close(context, null),
+      onPressed: () {
+        _clearStream();
+        close(context, null);
+      },
       icon: Icon(Icons.arrow_back_ios_new_rounded),
     );
   }
@@ -37,8 +66,10 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    return FutureBuilder(
-      future: onSearch(query),
+    _onQueryChanged(query);
+
+    return StreamBuilder(
+      stream: debounceMovie.stream,
       builder: (context, snapshot) {
         final movies = snapshot.data ?? [];
 
@@ -46,7 +77,10 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
           itemCount: movies.length,
           itemBuilder: (context, index) {
             return _MovieItem(
-              onMovieSelected: close,
+              onMovieSelected: (context, movie) {
+                _clearStream();
+                close(context, movie);
+              },
               movie: movies[index]
             );
           },

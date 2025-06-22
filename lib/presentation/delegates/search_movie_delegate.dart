@@ -1,4 +1,5 @@
 import 'package:animate_do/animate_do.dart';
+import 'package:cinemapedia/config/helper/human_formats.dart';
 import 'package:cinemapedia/domain/entities/movie.dart';
 import 'package:flutter/material.dart';
 
@@ -45,11 +46,68 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
         return ListView.builder(
           itemCount: movies.length,
           itemBuilder: (context, index) {
-            final movie = movies[index];
-            return ListTile(title: Text(movie.title));
+            return _MovieItem(
+              onMovieSelected: close,
+              movie: movies[index]
+            );
           },
         );
       },
+    );
+  }
+}
+
+class _MovieItem extends StatelessWidget {
+  final Movie movie;
+  final Function onMovieSelected;
+
+  const _MovieItem({required this.movie, required this.onMovieSelected});
+
+  @override
+  Widget build(BuildContext context) {
+    final textStyles = Theme.of(context).textTheme;
+    final size = MediaQuery.of(context).size;
+
+    return GestureDetector(
+      onTap: () {
+        onMovieSelected(context, movie);
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
+        child: Row(
+          children: [
+            SizedBox(
+              width:  size.width * 0.2,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10.0),
+                child: Image.network(movie.posterPath, fit: BoxFit.cover),
+              ),
+            ),
+            const SizedBox(width: 10.0),
+            SizedBox(
+              width: size.width * 0.7,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(movie.title, style: textStyles.titleMedium),
+                  (movie.overview.length > 100)
+                  ? Text('${movie.overview.substring(0,100)}...')
+                  : Text(movie.overview),
+                  Row(
+                    children: [
+                      Icon(Icons.star_half_rounded, color: Colors.yellow[800]),
+                      const SizedBox(width: 5.0),
+                      Text(movie.voteAverage.toStringAsFixed(1), style: textStyles.bodyMedium!.copyWith(
+                        color: Colors.yellow[800]
+                      )),
+                    ],
+                  )
+                ],
+              )
+            )
+          ],
+        ),
+      ),
     );
   }
 }

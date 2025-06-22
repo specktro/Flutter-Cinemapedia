@@ -19,8 +19,7 @@ class ActorsByMovieNotifier extends StateNotifier<Map<String, List<Actor>>> {
     }
 
     // FIXME: This delay is just for demonstration purposes.
-    await Future.delayed(const Duration(milliseconds: 600));
-    print('Realizing http request');
+    await Future.delayed(const Duration(milliseconds: 400));
     final actors = await getActors(movieId);
     state = {...state, movieId: actors};
   }

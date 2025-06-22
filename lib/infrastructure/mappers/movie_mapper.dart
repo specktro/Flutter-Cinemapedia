@@ -18,7 +18,7 @@ class MovieMapper {
       popularity: movieDB.popularity,
       posterPath: (movieDB.posterPath != '')
         ? 'https://image.tmdb.org/t/p/w500${movieDB.posterPath}'
-        : 'no-poster',
+        : 'https://www.prokerala.com/movies/assets/img/no-poster-available.jpg',
       releaseDate: movieDB.releaseDate,
       title: movieDB.title,
       video: movieDB.video,
@@ -41,7 +41,7 @@ class MovieMapper {
       popularity: movieDetailsDB.popularity,
       posterPath: (movieDetailsDB.posterPath != '')
         ? 'https://image.tmdb.org/t/p/w500${movieDetailsDB.posterPath}'
-        : 'no-poster',
+        : 'https://www.prokerala.com/movies/assets/img/no-poster-available.jpg',
       releaseDate: movieDetailsDB.releaseDate,
       title: movieDetailsDB.title,
       video: movieDetailsDB.video,

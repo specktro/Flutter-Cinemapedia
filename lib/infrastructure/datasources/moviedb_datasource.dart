@@ -10,7 +10,7 @@ class MovieDBDatasource implements MoviesDatasource {
   final dio = Dio(BaseOptions(
     baseUrl: 'https://api.themoviedb.org/3',
     queryParameters: {
-      'api_key': Environment.MovieDBKey,
+      'api_key': Environment.movieDBKey,
       'language': 'es-MX'
     }
   ));
@@ -57,5 +57,15 @@ class MovieDBDatasource implements MoviesDatasource {
     final movieDB = MovieDetails.fromJson(response.data);
     final Movie movie = MovieMapper.movieDetailsToEntity(movieDB);
     return movie;
+  }
+
+  @override
+  Future<List<Movie>> searchMovies(String query) async {
+    if (query.isEmpty) {
+      return [];
+    }
+
+    final response = await dio.get('/search/movie', queryParameters: {"query": query});
+    return _jsonToMovies(response.data);
   }
 }

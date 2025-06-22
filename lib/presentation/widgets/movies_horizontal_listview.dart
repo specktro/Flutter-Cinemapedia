@@ -117,7 +117,7 @@ class _Slide extends StatelessWidget {
                 const SizedBox(width: 3.0),
                 Text('${movie.voteAverage}', style: textStyles.bodyMedium?.copyWith(color: Colors.yellow.shade800)),
                 const Spacer(),
-                Text('${HumanFormats.number(movie.popularity)}', style: textStyles.bodySmall)
+                Text(HumanFormats.number(movie.popularity), style: textStyles.bodySmall)
               ]
             ),
           )

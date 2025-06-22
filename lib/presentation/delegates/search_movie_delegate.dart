@@ -21,6 +21,11 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
 
   void _clearStream() {
     debounceMovie.close();
+    isLoadingStream.close();
+
+    if (_debounceTimer?.isActive ?? false) {
+      _debounceTimer!.cancel();
+    }
   }
 
   void _onQueryChanged(String query) {

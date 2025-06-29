@@ -1,6 +1,7 @@
 import 'package:animate_do/animate_do.dart';
-import 'package:cinemapedia/presentation/providers/actors_by_movie_provider.dart';
-import 'package:cinemapedia/presentation/providers/movie_info_provider.dart';
+import 'package:cinemapedia/presentation/providers/services/actors_by_movie_provider.dart';
+import 'package:cinemapedia/presentation/providers/services/movie_info_provider.dart';
+import 'package:cinemapedia/presentation/providers/storage/local_storage_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cinemapedia/domain/entities/movie.dart';
@@ -169,14 +170,19 @@ class _ActorsByMovie extends ConsumerWidget {
   }
 }
 
-class _CustomSliverAppBar extends StatelessWidget {
+final isFavoriteProvider = FutureProvider.family.autoDispose<bool, int>((ref, movieId) async {
+  return ref.watch(localStorageRepositoryProvider).isMovieFavorite(movieId);
+});
+
+class _CustomSliverAppBar extends ConsumerWidget {
   final Movie movie;
   const _CustomSliverAppBar({
     required this.movie
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isFavoriteFuture = ref.watch(isFavoriteProvider(movie.id));
     final size = MediaQuery.of(context).size;
 
     return SliverAppBar(
@@ -186,13 +192,26 @@ class _CustomSliverAppBar extends StatelessWidget {
       actions: [
         IconButton(
           onPressed: () {
-            // TODO: Toggle favorite action
+            ref.watch(localStorageRepositoryProvider).toggleFavorite(movie);
+            ref.invalidate(isFavoriteProvider(movie.id));
           },
-          icon: Icon(Icons.favorite_border)
+          icon: isFavoriteFuture
+            .when(
+              data: (isFavorite) {
+                if (isFavorite) {
+                  return const Icon(Icons.favorite, color: Colors.red);
+                } else {
+                  return const Icon(Icons.favorite_border, color: Colors.white);
+                }
+              },
+              error: (error, stackTrace) => const Icon(Icons.favorite_border, color: Colors.white),
+              loading: () => const CircularProgressIndicator(strokeWidth: 2.0)
+            )
+    // Icon( Icons.favorite_border)
         )
       ],
       flexibleSpace: FlexibleSpaceBar(
-        titlePadding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        titlePadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         title: Text(
           movie.title, 
           style: const TextStyle(fontSize: 20, color: Colors.white), 

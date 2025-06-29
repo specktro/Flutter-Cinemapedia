@@ -25,7 +25,7 @@ final approuter = GoRouter(
     ),
     GoRoute(
       path: '/',
-      redirect: (_, _) => '/home/0' 
+      redirect: (context, state) => '/home/0'
     )
   ]
 );
